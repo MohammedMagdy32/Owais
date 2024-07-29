@@ -8,6 +8,8 @@ pipeline {
     environment {
         registry = "mohammed32/owais"
         dockerImage = ''
+        remoteServer = '157.175.4.250' 
+        sshCredentialsId = 'Deployment-Docker-Server'
     }
 
     stages {
@@ -41,13 +43,23 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
-                        dockerImage.push()
                         dockerImage.push('latest')
                     }
                 }
             }
         }
 
+        stage('Deploy to Server') {
+            steps {
+                sshagent(credentials: [sshCredentialsId]) {
+                    sh """
+                    ssh -o StrictHostKeyChecking=no ${remoteServer} '
+                    cd /home/ubuntu/ &&
+                    ls'
+                    """
+                }
+            }
+        }
     }
 
     post {
