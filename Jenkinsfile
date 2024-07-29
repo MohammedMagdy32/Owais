@@ -53,11 +53,9 @@ pipeline {
         stage('Dynamic Analysis - DAST with OWASP ZAP') {
             steps {
                 script {
-                    // Create a directory for ZAP reports
-                    sh 'mkdir -p zap-reports'
-                    // Run ZAP baseline scan
+                    // Run ZAP baseline scan and print the output to the screen
                     sh '''
-                    docker run -v $(pwd)/zap-reports:/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t "$TARGET_URL" -g gen.conf -r zap_report.html || true
+                    docker run -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t "$TARGET_URL" || true
                     '''
                 }
             }
@@ -82,7 +80,6 @@ pipeline {
             cleanWs()
         }
         success {
-            archiveArtifacts artifacts: 'zap-reports/zap_report.html', allowEmptyArchive: true
             echo 'Pipeline completed successfully'
         }
         failure {
