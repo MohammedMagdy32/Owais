@@ -32,7 +32,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                    dockerImage = docker.build("${registry}:${env.BUILD_NUMBER}")
                 }
             }
         }
@@ -40,7 +40,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    docker.withRegistry('') {
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
                         dockerImage.push()
                         dockerImage.push('latest')
                     }
@@ -50,9 +50,10 @@ pipeline {
 
         stage('Deploy to Cloud') {
             steps {
-                // Example for AWS ECS
-                withAWS(credentials: 'aws-credentials', region: 'us-west-2') {
-                    sh 'aws ecs update-service --cluster your-cluster-name --service your-service-name --force-new-deployment'
+                script {
+                    withAWS(credentials: 'aws-credentials', region: 'us-west-2') {
+                        sh 'aws ecs update-service --cluster your-cluster-name --service your-service-name --force-new-deployment'
+                    }
                 }
                 // Example for Kubernetes
                 // kubernetesDeploy configs: 'k8s-deployment.yaml', kubeconfigId: 'kubeconfig'
@@ -72,3 +73,4 @@ pipeline {
         }
     }
 }
+
