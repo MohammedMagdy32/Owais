@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git 'https://github.com/amarthakur0/nodejs-api-template'
+                git 'https://github.com/MohammedMagdy32/Owais'
             }
         }
         
@@ -47,7 +47,6 @@ pipeline {
                 }
             }
         }
-      
     }
 
     post {
@@ -62,3 +61,4 @@ pipeline {
         }
     }
 }
+
