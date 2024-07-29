@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git 'https://github.com/MohammedMagdy32/Owais'
+                git branch: 'main', url: 'https://github.com/MohammedMagdy32/Owais'
             }
         }
         
@@ -47,6 +47,17 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy to Cloud') {
+            steps {
+                // Example for AWS ECS
+                withAWS(credentials: 'aws-credentials', region: 'us-west-2') {
+                    sh 'aws ecs update-service --cluster your-cluster-name --service your-service-name --force-new-deployment'
+                }
+                // Example for Kubernetes
+                // kubernetesDeploy configs: 'k8s-deployment.yaml', kubeconfigId: 'kubeconfig'
+            }
+        }
     }
 
     post {
@@ -61,4 +72,3 @@ pipeline {
         }
     }
 }
-
