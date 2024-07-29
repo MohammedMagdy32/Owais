@@ -54,8 +54,9 @@ pipeline {
                 sshagent(credentials: [sshCredentialsId]) {
                     sh """
                     ssh -o StrictHostKeyChecking=no ubuntu@${remoteServer} '
-                    cd /home/ubuntu/ &&
-                    ls'
+                    cd /home/ubuntu/deploy &&
+                    docker compose pull &&
+                    docker compose up -d'
                     """
                 }
             }
