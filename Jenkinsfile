@@ -10,6 +10,7 @@ pipeline {
         dockerImage = ''
         remoteServer = '157.175.4.250'
         sshCredentialsId = 'Deployment-Docker-Server'
+        TARGET_URL = 'http://157.175.4.250:80/'
     }
 
     stages {
@@ -52,8 +53,11 @@ pipeline {
         stage('Dynamic Analysis - DAST with OWASP ZAP') {
             steps {
                 script {
+                    // Create a directory for ZAP reports
+                    sh 'mkdir -p zap-reports'
+                    // Run ZAP baseline scan
                     sh """
-                    docker run -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://157.175.4.250:80/ -r zap_report.html || true
+                    docker run -v $(pwd)/zap-reports:/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t "$TARGET_URL" -g gen.conf -r zap_report.html || true
                     """
                 }
             }
@@ -78,7 +82,7 @@ pipeline {
             cleanWs()
         }
         success {
-            archiveArtifacts artifacts: 'zap_report.html', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'zap-reports/zap_report.html', allowEmptyArchive: true
             echo 'Pipeline completed successfully'
         }
         failure {
