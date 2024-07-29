@@ -1,14 +1,14 @@
 pipeline {
     agent any
-    
+
     tools { 
         nodejs "NodeJS" 
     }
-    
+
     environment {
         registry = "mohammed32/owais"
         dockerImage = ''
-        remoteServer = '157.175.4.250' 
+        remoteServer = '157.175.4.250'
         sshCredentialsId = 'Deployment-Docker-Server'
     }
 
@@ -18,19 +18,19 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/MohammedMagdy32/Owais'
             }
         }
-        
+
         stage('Install Dependencies') {
             steps {
                 sh 'npm install'
             }
         }
-        
+
         stage('Run Unit Tests') {
             steps {
                 sh 'npm test'
             }
         }
-        
+
         stage('Build Docker Image') {
             steps {
                 script {
@@ -38,7 +38,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Push Docker Image') {
             steps {
                 script {
@@ -48,11 +48,17 @@ pipeline {
                 }
             }
         }
-        stage ("Dynamic Analysis - DAST with OWASP ZAP") {
-			steps {
-				sh "docker run -t owasp/zap2docker-stable zap-baseline.py -t http://192.168.18.23:5000/ || true"
-			}
-		}
+
+        stage('Security OWASP ZAP') {
+            steps {
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
+                        sh "docker run -t owasp/zap2docker-stable zap-baseline.py -t http://157.175.4.250:80/ || true"
+                    }
+                }
+            }
+        }
+
         stage('Deploy to Server') {
             steps {
                 sshagent(credentials: [sshCredentialsId]) {
@@ -79,4 +85,3 @@ pipeline {
         }
     }
 }
-
