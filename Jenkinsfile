@@ -7,7 +7,7 @@ pipeline {
     
     environment {
         registry = "mohammed32/owais"
-        dockerImage = ''
+        dockerImage = 'assessment'
     }
 
     stages {
