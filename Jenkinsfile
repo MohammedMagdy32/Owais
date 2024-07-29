@@ -53,7 +53,7 @@ pipeline {
             steps {
                 sshagent(credentials: [sshCredentialsId]) {
                     sh """
-                    ssh -o StrictHostKeyChecking=no ${remoteServer} '
+                    ssh -o StrictHostKeyChecking=no ubuntu@${remoteServer} '
                     cd /home/ubuntu/ &&
                     ls'
                     """
