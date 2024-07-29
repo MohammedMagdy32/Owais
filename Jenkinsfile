@@ -52,7 +52,9 @@ pipeline {
         stage('Dynamic Analysis - DAST with OWASP ZAP') {
             steps {
                 script {
-                    sh "docker run -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://157.175.4.250:80/ -r zap_report.html || true"
+                    sh """
+                    docker run -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://157.175.4.250:80/ -r zap_report.html || true
+                    """
                 }
             }
         }
@@ -76,6 +78,7 @@ pipeline {
             cleanWs()
         }
         success {
+            archiveArtifacts artifacts: 'zap_report.html', allowEmptyArchive: true
             echo 'Pipeline completed successfully'
         }
         failure {
