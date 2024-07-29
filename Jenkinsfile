@@ -1,26 +1,65 @@
 pipeline {
-  agent any
+    agent any
     
-  tools {nodejs "NodeJS"}
+    tools { 
+        nodejs "NodeJS" 
+    }
     
-  stages {
-        
-    stage('Cloning Git') {
-      steps {
-        git 'https://github.com/gustavoapolinario/node-todo-frontend'
-      }
+    environment {
+        registry = "mohammed32/owais"
+        dockerImage = ''
     }
+
+    stages {
+        stage('Cloning Git') {
+            steps {
+                git branch: 'main', url: 'https://github.com/MohammedMagdy32/Owais'
+            }
+        }
         
-    stage('Install dependencies') {
-      steps {
-        sh 'npm install'
-      }
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
+        
+        stage('Run Unit Tests') {
+            steps {
+                sh 'npm test'
+            }
+        }
+        
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                }
+            }
+        }
+        
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry('') {
+                        dockerImage.push()
+                        dockerImage.push('latest')
+                    }
+                }
+            }
+        }
+
     }
-     
-    stage('Test') {
-      steps {
-         sh 'npm test'
-      }
-    }      
-  }
+
+    post {
+        always {
+            cleanWs()
+        }
+        success {
+            echo 'Pipeline completed successfully'
+        }
+        failure {
+            echo 'Pipeline failed'
+        }
+    }
 }
+
