@@ -1,5 +1,9 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'node:14'
+        }
+    }
 
     environment {
         registry = "mohammed32/owais"
@@ -15,21 +19,13 @@ pipeline {
         
         stage('Install Dependencies') {
             steps {
-                script {
-                    docker.image('node:14').inside {
-                        sh 'npm install'
-                    }
-                }
+                sh 'npm install'
             }
         }
         
         stage('Run Unit Tests') {
             steps {
-                script {
-                    docker.image('node:14').inside {
-                        sh 'npm test'
-                    }
-                }
+                sh 'npm test'
             }
         }
         
