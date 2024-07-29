@@ -7,7 +7,7 @@ pipeline {
     
     environment {
         registry = "mohammed32/owais"
-        dockerImage = 'assessment'
+        dockerImage = ''
     }
 
     stages {
@@ -40,13 +40,14 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    dockerImage.push()
-                    dockerImage.push('latest')
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
+                        dockerImage.push()
+                        dockerImage.push('latest')
+                    }
                 }
             }
         }
 
-    
     }
 
     post {
@@ -61,3 +62,4 @@ pipeline {
         }
     }
 }
+
