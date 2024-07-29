@@ -16,16 +16,20 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
-                    def nodeHome = tool name: 'NodeJS', type: 'NodeJSInstallation'
-                    env.PATH = "${nodeHome}/bin:${env.PATH}"
-                    sh 'npm install'
+                    docker.image('node:14').inside {
+                        sh 'npm install'
+                    }
                 }
             }
         }
         
         stage('Run Unit Tests') {
             steps {
-                sh 'npm test'
+                script {
+                    docker.image('node:14').inside {
+                        sh 'npm test'
+                    }
+                }
             }
         }
         
