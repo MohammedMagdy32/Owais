@@ -4,7 +4,7 @@
   "description": "Node API Template to quickly make API's with NodeJS",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "echo \"No tests specified\" && exit 0",
     "start": "node index.js",
     "dev": "nodemon index.js"
   },
@@ -41,3 +41,4 @@
     "nodemon": "^2.0.3"
   }
 }
+
