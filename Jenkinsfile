@@ -57,7 +57,7 @@ pipeline {
                     sh 'mkdir -p zap-reports'
                     // Run ZAP baseline scan
                     sh """
-                    docker run -v $(pwd)/zap-reports:/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t "$TARGET_URL" -g gen.conf -r zap_report.html || true
+                    docker run -v $(pwd)/zap-reports:/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://192.168.18.23:5000/ -g gen.conf -r zap_report.html || true
                     """
                 }
             }
