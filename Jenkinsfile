@@ -34,7 +34,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    dockerImage = docker.build("${registry}")
+                    dockerImage = docker.build("${registry}:${env.BUILD_NUMBER}")
                 }
             }
         }
@@ -49,12 +49,10 @@ pipeline {
             }
         }
 
-        stage('Security OWASP ZAP') {
+        stage('Dynamic Analysis - DAST with OWASP ZAP') {
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
-                        sh "docker run -t owasp/zap2docker-stable zap-baseline.py -t http://157.175.4.250:80/ || true"
-                    }
+                    sh "docker run -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://157.175.4.250:80/ -r zap_report.html || true"
                 }
             }
         }
