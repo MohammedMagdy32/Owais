@@ -40,25 +40,13 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
-                        dockerImage.push()
-                        dockerImage.push('latest')
-                    }
+                    dockerImage.push()
+                    dockerImage.push('latest')
                 }
             }
         }
 
-        stage('Deploy to Cloud') {
-            steps {
-                script {
-                    withAWS(credentials: 'aws-credentials', region: 'us-west-2') {
-                        sh 'aws ecs update-service --cluster your-cluster-name --service your-service-name --force-new-deployment'
-                    }
-                }
-                // Example for Kubernetes
-                // kubernetesDeploy configs: 'k8s-deployment.yaml', kubeconfigId: 'kubeconfig'
-            }
-        }
+    
     }
 
     post {
@@ -73,4 +61,3 @@ pipeline {
         }
     }
 }
-
